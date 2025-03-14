@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>LRC File Generator</title>
+
+</head>
+
+<body>
+    <!-- <header>
+        <h1>LRC File Generator</h1>
+        <div class="headerButtons">
+            <span>Test</span>
+            <span>Test</span>
+            <span>Test</span>
+            <span>Test</span>
+        </div>
+    </header> -->
+    <div class="container">
+        <h2 style="margin-bottom: 25px;">Generate .lrc file for your audio</h2>
+
+        <label for="audioFile" class="inputButton" id="customButton">Select an audio file</label>
+        <input type="file" id="audioFile" accept="audio/mp3">
+        <div class="fileInfo" id="fileInfo">
+            <span id="fileName"></span>
+            <button class="updateButton" id="updateButton">Update File</button>
+        </div>
+
+
+        <div class="audioHolder">
+            <audio id="audio" controls></audio>
+            <div class="topAudioButtons">
+
+                <button onclick="skip(-3)" class="audioControls"><i class="fa-solid fa-backward"></i></button>
+                <button onclick="skip(3)" class="audioControls"><i class="fa-solid fa-forward"></i></button>
+                <button onclick="togglePlay()" class="audioControls" id="playPauseBtn"><i
+                        class="fa-solid fa-play"></i></button>
+            </div>
+        </div>
+
+        <div class="render">
+            <button onclick="showText()" class="text showHide">Show Text</button>
+            <button onclick="showSynch()" class="synch showHide">Synch</button>
+        </div>
+
+
+        <textarea id="lyricsInput" placeholder="Enter lyrics, each line separately..." dir="auto"></textarea>
+
+
+
+        <div class="hide" id="lyricsContainer"></div>
+
+        <div id="popup" class="hide"></div>
+
+
+
+
+
+
+        <button class="generateButton" onclick="generateLRC()">Generate .lrc File</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
