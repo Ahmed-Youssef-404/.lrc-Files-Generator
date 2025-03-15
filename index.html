@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script> -->
     <title>LRC File Generator</title>
 
 </head>
@@ -21,30 +23,29 @@
         </div>
     </header> -->
     <div class="container">
-        <h2 style="margin-bottom: 25px;">Generate .lrc file for your audio</h2>
+        <h2>Generate .lrc file for your audio</h2>
 
         <label for="audioFile" class="inputButton" id="customButton">Select an audio file</label>
         <input type="file" id="audioFile" accept="audio/mp3">
         <div class="fileInfo" id="fileInfo">
             <span id="fileName"></span>
-            <button class="updateButton" id="updateButton">Update File</button>
+            <button class="updateButton" id="updateButton">Change File</button>
         </div>
 
 
         <div class="audioHolder">
             <audio id="audio" controls></audio>
             <div class="topAudioButtons">
-
-                <button onclick="skip(-3)" class="audioControls"><i class="fa-solid fa-backward"></i></button>
-                <button onclick="skip(3)" class="audioControls"><i class="fa-solid fa-forward"></i></button>
-                <button onclick="togglePlay()" class="audioControls" id="playPauseBtn"><i
+                <button onclick="skip(-3)" class="audioControls spesialButton"><i class="fa-solid fa-backward"></i></button>
+                <button onclick="skip(3)" class="audioControls spesialButton"><i class="fa-solid fa-forward"></i></button>
+                <button onclick="togglePlay()" class="audioControls spesialButton" id="playPauseBtn"><i
                         class="fa-solid fa-play"></i></button>
             </div>
         </div>
 
         <div class="render">
-            <button onclick="showText()" class="text showHide">Show Text</button>
-            <button onclick="showSynch()" class="synch showHide">Synch</button>
+            <button onclick="showText()" class="text showHide spesialButton">Show Text</button>
+            <button onclick="showSynch()" class="synch showHide spesialButton">Synch</button>
         </div>
 
 
@@ -56,6 +57,7 @@
 
         <div id="popup" class="hide"></div>
 
+        <div class="overLay hide" id="overLay" onclick="hidePopup();"></div>
 
 
 

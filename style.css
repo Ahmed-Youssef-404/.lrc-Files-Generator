@@ -9,9 +9,18 @@ body {
     font-family: 'Poppins', sans-serif;
     text-align: center;
     background: linear-gradient(135deg, #1e3c72, #2a5298);
+    background: #020e22;
     color: white;
     min-height: 100vh;
     overflow: auto;
+}
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
 }
 
 button {
@@ -21,12 +30,18 @@ button {
     border-radius: 5px;
     font-size: larger;
     cursor: pointer;
+    color: #c0c0c0;
     background-color: #badbff;
+    background-color: #1a2539;
 }
 
-.hide {
-    display: none;
-    /* visibility: hidden; */
+.spesialButton{
+    background-color: #020e2240 !important;
+    color: white;
+}
+
+.spesialButton:hover{
+    background-color: #020e22 !important;
 }
 
 header {
@@ -43,18 +58,27 @@ header {
     z-index: 1000;
 }
 
+.overLay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
 .container {
-    max-width: 800px;
+    max-width: 1000px;
     max-height: 720px;
     margin: auto;
     background: rgba(255, 255, 255, 0.1);
+    background: rgba(235, 234, 255, 0.1);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     margin-top: 20px;
     margin-bottom: 20px;
-    /* height: 100%; */
-    /* height: 800px; */
 }
 
 
@@ -68,6 +92,7 @@ header {
     font-size: 16px;
     font-weight: bold;
     border: none;
+    margin-top: 15px;
 }
 
 /* Hide the default file input */
@@ -88,8 +113,8 @@ header {
 .updateButton {
     display: inline-block;
     padding: 5px 10px;
-    background-color: #28a745;
-    color: white;
+    background-color: #071631;
+    color: rgb(255, 255, 255);
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
@@ -100,23 +125,25 @@ header {
 
 .audioHolder {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
-    padding: 20px;
     /* border: solid red 2px; */
+    width: 100%;
+    margin: 10px 0;
+    gap: 10px;
 }
 
 audio {
     width: 100%;
+    height: 30px;
 }
 
-.audioControls {
-    margin: 0 5px;
-    width: 40px;
-}
-
-.audioControls:hover {
-    background-color: #7abaff;
+.plyr__controls{
+    /* border: solid red; */
+    margin: 15px 0;
+    background: #010023 !important;
+    display: flex !important;
+    min-width: 100% !important;;
 }
 
 .topAudioButtons {
@@ -124,15 +151,30 @@ audio {
     justify-content: center;
     align-items: center;
     gap: 7px;
-    margin: 10px 5px;
-    /* border: solid red; */
+    margin: 20px 5px;
 }
+
+.audioControls {
+    margin: 0 5px;
+    width: 40px;
+    height: 25px;
+    font-size: small;
+    padding: 0 !important;
+}
+
 
 @media screen and (max-width: 600px) {
     .audioHolder {
         flex-direction: column;
     }
 
+    .topAudioButtons{
+        margin: 0;
+    }
+
+    textarea{
+        margin-top: 10px !important;
+    }
 }
 
 
@@ -145,7 +187,7 @@ textarea {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     border-radius: 5px;
     border: none;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgb(0 0 0 / 19%) !important;
     color: white;
     resize: none;
 }
@@ -156,11 +198,11 @@ textarea:focus {
 }
 
 textarea::placeholder {
-    color: wheat;
+    color: rgba(255, 247, 232, 0.643);
 }
 
 .render{
-    margin: 20px;
+    margin: 0 20px;
 }
 
 .showHide {
@@ -168,7 +210,7 @@ textarea::placeholder {
 }
 
 .showLyricsContainer {
-    margin-bottom: 20px;
+    margin: 15px 0;
     max-height: 350px;
     overflow-y: auto;
     padding: 10px;
@@ -179,8 +221,8 @@ textarea::placeholder {
 
 @media screen and (min-height: 720px) {
     .showLyricsContainer {
-        /* display: none; */
         max-height: 650px;
+        margin-top: 15px;
     }
 
     .container {
@@ -196,7 +238,7 @@ textarea::placeholder {
     padding: 10px;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
-    height: 70px;
+    /* height: 70px; */
 }
 
 
@@ -206,27 +248,39 @@ textarea::placeholder {
     margin-right: 10px;
     border: none;
     border-radius: 5px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgb(0 4 18 / 48%);
     color: white;
     font-size: 25px;
-    height: 50px;
+    height: auto;
+    min-height: 50px;
+    max-height: 200px; /* أقصى ارتفاع */
 }
 
 .lyric-input:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.571);
 }
 
-@media screen and (max-width: 600px) {
-    .lyric-line {
-        flex-direction: column;
-        height: auto;
-        gap: 10px;
+@media screen and (max-width: 680px) {
+
+    .container {
+        padding: 15px 0;
+        margin: 0;
     }
 
+    .lyric-line {
+        flex-direction: column;
+        height: 130px;
+        gap: 15px;
+        /* border: solid red; */
+    }
+    
     .lyric-input {
         margin-right: 0;
-        width: 300px;
+        width: 100%;
+        font-size: 1.5rem;
+        /* border: solid red; */
+       min-height: 50px !important;
     }
 
 }
@@ -247,9 +301,8 @@ textarea::placeholder {
 
 
 .lyricControls button:hover {
-    background-color: #7abaff;
+    background-color: #010023;
 }
-
 
 
 .popup {
@@ -259,11 +312,13 @@ textarea::placeholder {
     height: 350px;
     transform: translate(-50%, -50%);
     background: rgb(128, 130, 168);
+    background: #0f2751;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     width: 500px;
     text-align: center;
+    z-index: 1000;
 }
 
 @media screen and (max-width: 600px) {
@@ -328,10 +383,14 @@ textarea::placeholder {
     font-size: larger;
     cursor: pointer;
     background-color: #badbff;
+    color: black;
 }
 
 
-
+.generateButton{
+    background-color: #000e27;
+    color: rgb(255, 255, 255);
+}
 
 
 /* إخفاء الـ Scrollbar في المتصفحات التي تدعمه */

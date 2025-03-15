@@ -74,7 +74,7 @@ function updateLyricsDisplay() {
                 <button onclick="setTimestamp(${index})"><i class="fa-solid fa-clock"></i></button>
                 <button onclick="playFrom(${index})"><i class="fa-solid fa-play"></i></button>
                 <span id="time-${index}" onclick="manualEditTime(${index})">
-                    ${lyric.timestamp ? formatTime(lyric.timestamp) : "[00:00.00]"}
+                    ${lyric.timestamp ? formatTime(lyric.timestamp).replace(/\[|\]/g, "") : "00:00.00"}
                 </span>
                 <button onclick="showPupUp(${index})"><i class="fa-solid fa-pencil"></i></button>
             </div>       
@@ -93,6 +93,10 @@ function updateLyricsDisplay() {
 
 
 function showPupUp(index) {
+    // let overLay = document.getElementById(overLay);
+    // overLay.classList.add("show");
+    // overLay.classList.remove("hide");
+
     let popup = document.getElementById('popup');
     let currentText = lyrics[index].text;
     let currentTimestamp = lyrics[index].timestamp || 0;
@@ -109,12 +113,12 @@ function showPupUp(index) {
 
 
             <div class="editPupUp">
-                <label for="edit-minutes">Minute</label>
+                <label for="edit-minutes">Minutes</label>
                 <input type="number" id="edit-minutes" value="${Math.floor(currentTimestamp / 60)}" min="0">
             </div>
 
             <div class="editPupUp">
-                <label for="edit-seconds">Second</label>
+                <label for="edit-seconds">Seconds</label>
                 <input type="number" id="edit-seconds" value="${Math.floor(currentTimestamp % 60)}" min="0" max="59">
             </div>
 
@@ -130,6 +134,10 @@ function showPupUp(index) {
             </div>
         </div>
     `;
+
+    let overLay = document.getElementById("overLay");
+    overLay.classList.add("show");
+    overLay.classList.remove("hide");
 }
 
 function applyChanges(index) {
@@ -162,6 +170,7 @@ function hidePopup() {
     let popup = document.getElementById('popup');
     popup.classList.add("hide");
     popup.innerHTML = "";
+    closeOverLay();
 }
 
 
@@ -172,7 +181,8 @@ function hidePopup() {
 function setTimestamp(index) {
     let time = audio.currentTime;
     lyrics[index].timestamp = time;
-    document.getElementById(`time-${index}`).innerText = formatTime(time);
+    // lyrics[index].timestamp = time;
+    document.getElementById(`time-${index}`).innerText = formatTime(time).replace("[", "").replace("]", "");
 }
 
 function playFrom(index) {
@@ -194,6 +204,8 @@ function adjustTime(index, amount, unit) {
         document.getElementById(`time-${index}`).innerText = formatTime(lyrics[index].timestamp);
     }
 }
+
+// 
 
 function confirmEdit(index) {
     let updatedText = document.getElementById(`lyric-text-${index}`).value;
@@ -228,6 +240,12 @@ function formatTime(seconds) {
 }
 
 function generateLRC() {
+
+    if (!fileInput.files.length) {
+        alert("Please select an audio file");
+        return;
+    }
+
     let lrcContent = lyrics.map((line, index) => {
         let updatedText = document.getElementById(`lyric-text-${index}`).value;
         return line.timestamp !== null ? `${formatTime(line.timestamp)}${updatedText}` : '';
@@ -272,6 +290,17 @@ let textinput = document.getElementById("lyricsInput")
 let synchs = document.getElementById("lyricsContainer")
 
 function showSynch() {
+
+    if (!fileInput.files.length) {
+        alert("Please select an audio file");
+        return;
+    }
+
+    if (!fileInput.files.length) {
+        alert("Ple");
+        return;
+    }
+
     textinput.classList.add("hide")
     synchs.classList.remove("hide")
     synchs.classList.add("showLyricsContainer")
@@ -282,6 +311,12 @@ function showSynch() {
 function showText() {
     synchs.classList.add("hide")
     textinput.classList.remove("hide")
+}
+
+function closeOverLay(){
+    let overLay = document.getElementById("overLay");
+    overLay.classList.add("hide");
+    overLay.classList.remove("show");
 }
 
 
@@ -323,12 +358,10 @@ function callLeftArrowFunction() {
 }
 
 
-// استدعاء الدالة عند تحميل الصفحة
-initTextareaListener();
-
-
-
-    
+const player = new Plyr('#audio', {
+    controls: ['progress', 'current-time', 'mute', 'volume'],
+    autoplay: false
+});
 
 
 
