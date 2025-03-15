@@ -16,8 +16,7 @@ function skip(seconds) {
 // تشغيل أو إيقاف الصوت
 let btn = document.getElementById('playPauseBtn');
 function togglePlay() {
-    if (fileInput.files.length > 0) {
-        
+    if (lastFile) { // بدل ما نعتمد على fileInput.files
         if (audio.paused) {
             audio.play();
             btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
@@ -25,8 +24,11 @@ function togglePlay() {
             audio.pause();
             btn.innerHTML = '<i class="fa-solid fa-play"></i>';
         }
+    } else {
+        alert("Please select an audio file first");
     }
 }
+
 
 // لما الصوت ينتهي
 audio.addEventListener("play", () => {
@@ -240,8 +242,7 @@ function formatTime(seconds) {
 }
 
 function generateLRC() {
-
-    if (!fileInput.files.length) {
+    if (!lastFile) { // بدل ما نعتمد على fileInput.files
         alert("Please select an audio file");
         return;
     }
@@ -254,7 +255,7 @@ function generateLRC() {
     let blob = new Blob([lrcContent], { type: 'text/plain' });
     let link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = fileInput.files[0].name.replace(".mp3", "") + ".lrc";
+    link.download = lastFile.name.replace(".mp3", "") + ".lrc"; // بدل fileInput.files
     link.click();
 }
 
@@ -268,14 +269,21 @@ const fileInfo = document.getElementById("fileInfo");
 const fileNameDisplay = document.getElementById("fileName");
 const updateButton = document.getElementById("updateButton");
 
-// When the user selects a file
+let lastFile = null; // متغير لحفظ آخر ملف مختار
+
 fileInput.addEventListener("change", function () {
     if (fileInput.files.length > 0) {
-        fileNameDisplay.textContent = fileInput.files[0].name;
-        customButton.style.display = "none"; // Hide select button
-        fileInfo.style.display = "block"; // Show file info
+        lastFile = fileInput.files[0]; // حفظ الملف الجديد
+        fileNameDisplay.textContent = lastFile.name;
+        customButton.style.display = "none"; // إخفاء زر الاختيار
+        fileInfo.style.display = "block"; // عرض معلومات الملف
+        audio.src = URL.createObjectURL(lastFile); // تحديث مصدر الصوت
+    } else if (lastFile) {
+        // لو المستخدم عمل Cancel، نرجع لآخر ملف محفوظ
+        fileInput.value = ""; // منع تنفيذ الحدث بدون تغيير
     }
 });
+
 
 // When clicking "Update File"
 updateButton.addEventListener("click", function () {
@@ -289,28 +297,27 @@ updateButton.addEventListener("click", function () {
 let textinput = document.getElementById("lyricsInput")
 let synchs = document.getElementById("lyricsContainer")
 
+// لما المستخدم يحاول عرض الـ Sync أو Text
 function showSynch() {
-
-    if (!fileInput.files.length) {
+    if (!lastFile) { // بدل ما نعتمد على fileInput.files، هنستخدم lastFile
         alert("Please select an audio file");
         return;
     }
+    
+    textinput.classList.add("hide");
+    synchs.classList.remove("hide");
+    synchs.classList.add("showLyricsContainer");
 
-    if (!fileInput.files.length) {
-        alert("Ple");
-        return;
-    }
-
-    textinput.classList.add("hide")
-    synchs.classList.remove("hide")
-    synchs.classList.add("showLyricsContainer")
-    loadLyrics()
-
+    loadLyrics();
 }
 
 function showText() {
-    synchs.classList.add("hide")
-    textinput.classList.remove("hide")
+    if (!lastFile) {
+        alert("Please select an audio file");
+        return;
+    }
+    synchs.classList.add("hide");
+    textinput.classList.remove("hide");
 }
 
 function closeOverLay(){
@@ -318,8 +325,6 @@ function closeOverLay(){
     overLay.classList.add("hide");
     overLay.classList.remove("show");
 }
-
-
 
 
 // Handling Keyboard
@@ -358,10 +363,10 @@ function callLeftArrowFunction() {
 }
 
 
-const player = new Plyr('#audio', {
-    controls: ['progress', 'current-time', 'mute', 'volume'],
-    autoplay: false
-});
+// const player = new Plyr('#audio', {
+//     controls: ['progress', 'current-time', 'mute', 'volume'],
+//     autoplay: false
+// });
 
 
 
