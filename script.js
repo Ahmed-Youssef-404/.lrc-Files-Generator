@@ -49,13 +49,14 @@ function loadLyrics() {
         if (existingLyric) {
             updatedLyrics.push(existingLyric);
         } else {
-            updatedLyrics.push({ text: line, timestamp: null });
+            updatedLyrics.push({ text: line, timestamp: null }); // لا تعطيه 0
         }
     });
 
     lyrics = updatedLyrics;
     updateLyricsDisplay();
 }
+
 
 
 
@@ -71,15 +72,16 @@ function updateLyricsDisplay() {
         div.setAttribute('data-timestamp', lyric.timestamp || 0);
         div.classList.add('lyric-line');
         div.innerHTML = `
-            <input type="text" value="${lyric.text}" id="lyric-text-${index}" class="lyric-input" onblur="confirmEdit(${index})" dir="auto">
+            
             <div class="lyricControls">
-                <button onclick="setTimestamp(${index})" title="Sync with audio"><i class="fa-solid fa-clock"></i></button>
+                <button onclick="showPupUp(${index})"><i class="fa-solid fa-pencil" title="Edit"></i></button>
                 <button onclick="playFrom(${index})" title="Play from here"><i class="fa-solid fa-play"></i></button>
                 <span id="time-${index}" onclick="manualEditTime(${index})">
                     ${lyric.timestamp ? formatTime(lyric.timestamp).replace(/\[|\]/g, "") : "00:00.00"}
                 </span>
-                <button onclick="showPupUp(${index})"><i class="fa-solid fa-pencil" title="Edit"></i></button>
+                <button onclick="setTimestamp(${index})" title="Sync with audio"><i class="fa-solid fa-clock"></i></button>
             </div>       
+            <input type="text" value="${lyric.text}" id="lyric-text-${index}" class="lyric-input" onblur="confirmEdit(${index})" dir="auto">
             
         `;
         container.appendChild(div);
@@ -88,45 +90,43 @@ function updateLyricsDisplay() {
 }
 
 // --------------------------------------
+// function highlightLyrics() {
+//     let currentTime = audio.currentTime;
+//     let lyricsContainer = document.getElementById('lyricsContainer');
+//     let parentContainer = document.querySelector('.showLyricsContainer');
+//     let lines = lyricsContainer.getElementsByClassName('lyric-line');
 
-function highlightLyrics() {
-    let currentTime = audio.currentTime;
-    let lyricsContainer = document.getElementById('lyricsContainer');
-    let parentContainer = document.querySelector('.showLyricsContainer'); // Restrict scrolling to this div
-    let lines = lyricsContainer.getElementsByClassName('lyric-line');
+//     let activeLine = null;
+//     for (let line of lines) {
+//         let timestamp = parseFloat(line.getAttribute('data-timestamp'));
+//         if (!isNaN(timestamp) && timestamp > 0 && currentTime >= timestamp) {
+//             activeLine = line;
+//         }
+//     }
 
-    let activeLine = null;
-    for (let line of lines) {
-        let timestamp = parseFloat(line.getAttribute('data-timestamp'));
-        if (!isNaN(timestamp) && currentTime >= timestamp) {
-            activeLine = line;
-        }
-    }
+//     for (let line of lines) {
+//         line.classList.remove('highlight');
+//     }
 
-    for (let line of lines) {
-        line.classList.remove('highlight');
-    }
+//     if (activeLine) {
+//         activeLine.classList.add('highlight');
 
-    if (activeLine) {
-        activeLine.classList.add('highlight');
+//         if (parentContainer) {
+//             let containerTop = parentContainer.scrollTop;
+//             let containerHeight = parentContainer.clientHeight;
+//             let lineTop = activeLine.offsetTop - parentContainer.offsetTop;
+//             let lineHeight = activeLine.clientHeight;
 
-        // Ensure "showLyricsContainer" scrolls properly
-        if (parentContainer) {
-            let containerTop = parentContainer.scrollTop; // Current scroll position
-            let containerHeight = parentContainer.clientHeight; // Visible height
-            let lineTop = activeLine.offsetTop - parentContainer.offsetTop; // Position of the lyric relative to the container
-            let lineHeight = activeLine.clientHeight; // Height of the lyric
+//             let scrollPosition = lineTop - (containerHeight / 2) + (lineHeight / 2);
+//             parentContainer.scrollTo({
+//                 top: scrollPosition,
+//                 behavior: "smooth"
+//             });
+//         }
+//     }
+// }
 
-            let scrollPosition = lineTop - (containerHeight / 2) + (lineHeight / 2);
-            parentContainer.scrollTo({
-                top: scrollPosition,
-                behavior: "smooth"
-            });
-        }
-    }
-}
-
-audio.ontimeupdate = highlightLyrics;
+// audio.ontimeupdate = highlightLyrics;
 
 
 
@@ -148,32 +148,34 @@ function showPupUp(index) {
 
     popup.innerHTML = `
         <div class="popup-content">
-            <div class="editPupUp">
-                <label for="edit-text">Edit Text:</label>
-                <input type="text" id="edit-text" value="${currentText}" dir="auto">
-            </div>
+            <form>
+                <div class="editPupUp">
+                    <label for="edit-text">Edit Text:</label>
+                    <input type="text" id="edit-text" value="${currentText}" dir="auto">
+                </div>
 
 
-            <div class="editPupUp">
-                <label for="edit-minutes">Minutes</label>
-                <input type="number" id="edit-minutes" value="${Math.floor(currentTimestamp / 60)}" min="0">
-            </div>
+                <div class="editPupUp">
+                    <label for="edit-minutes">Minutes</label>
+                    <input type="number" id="edit-minutes" value="${Math.floor(currentTimestamp / 60)}" min="0">
+                </div>
 
-            <div class="editPupUp">
-                <label for="edit-seconds">Seconds</label>
-                <input type="number" id="edit-seconds" value="${Math.floor(currentTimestamp % 60)}" min="0" max="59">
-            </div>
+                <div class="editPupUp">
+                    <label for="edit-seconds">Seconds</label>
+                    <input type="number" id="edit-seconds" value="${Math.floor(currentTimestamp % 60)}" min="0" max="59">
+                </div>
 
-            <div class="editPupUp">
-                <label for="edit-milliseconds">Milliseconds</label>
-                <input type="number" id="edit-milliseconds" value="${Math.floor((currentTimestamp % 1) * 100)}" min="0" max="99">
-            </div>
+                <div class="editPupUp">
+                    <label for="edit-milliseconds">Milliseconds</label>
+                    <input type="number" id="edit-milliseconds" value="${Math.floor((currentTimestamp % 1) * 100)}" min="0" max="99">
+                </div>
 
-            <div class="popup-buttons">
-                <button onclick="applyChanges(${index})" style="background-color: #64ff64;">Apply</button>
-                <button onclick="hidePopup()">Cancel</button>
-                <button onclick="confirmDelete(${index})" style="background-color: #ff6262;">Delete</button>
-            </div>
+                <div class="popup-buttons">
+                    <button type="submit" onclick="applyChanges(${index})" style="background-color: #64ff64;">Apply</button>
+                    <button onclick="hidePopup()">Cancel</button>
+                    <button onclick="confirmDelete(${index})" style="background-color: #ff6262;">Delete</button>
+                </div>
+            </form>
         </div>
     `;
 
@@ -228,9 +230,11 @@ function setTimestamp(index) {
 }
 
 function playFrom(index) {
-    if (lyrics[index].timestamp !== null) {
+    if (lyrics[index].timestamp !== null && lyrics[index].timestamp > 0) {
         audio.currentTime = lyrics[index].timestamp;
         audio.play();
+    } else {
+        alert("Please set a timestamp for this lyric first.");
     }
 }
 
@@ -252,7 +256,7 @@ function adjustTime(index, amount, unit) {
 function confirmEdit(index) {
     let updatedText = document.getElementById(`lyric-text-${index}`).value;
     if (updatedText !== lyrics[index].text) {
-        let confirmChange = confirm("The sentence will be editor in the original text. Confirm?");
+        let confirmChange = confirm("The sentence will be edited in the original text. Confirm?");
         if (confirmChange) {
             lyrics[index].text = updatedText;
             updateTextarea();
@@ -306,23 +310,23 @@ function insertNewLine() {
     updateFormattedText();
 }
 
-function updateFormattedText() {
-    let text = lyricsInput.value;
-    let lines = text.split("\n");
-    formattedText.innerHTML = "";
+// function updateFormattedText() {
+//     let text = lyricsInput.value;
+//     let lines = text.split("\n");
+//     formattedText.innerHTML = "";
 
-    lines.forEach((line, index) => {
-        let p = document.createElement("p");
-        p.textContent = line;
+//     lines.forEach((line, index) => {
+//         let p = document.createElement("p");
+//         p.textContent = line;
 
-        // لو السطر ده تم إضافته بـ Enter يدويًا، نزود المسافة
-        if (index > 0 && lines[index - 1] !== "") {
-            p.classList.add("entered");
-        }
+//         // لو السطر ده تم إضافته بـ Enter يدويًا، نزود المسافة
+//         if (index > 0 && lines[index - 1] !== "") {
+//             p.classList.add("entered");
+//         }
 
-        formattedText.appendChild(p);
-    });
-}
+//         formattedText.appendChild(p);
+//     });
+// }
 
 
 
@@ -341,10 +345,10 @@ function formatTime(seconds) {
 }
 
 function generateLRC() {
-    if (!lastFile) { // بدل ما نعتمد على fileInput.files
-        alert("Please select an audio file");
-        return;
-    }
+    // if (!lastFile) {
+    //     alert("Please select an audio file");
+    //     return;
+    // }
 
     let lrcContent = lyrics.map((line, index) => {
         let updatedText = document.getElementById(`lyric-text-${index}`).value;
@@ -531,3 +535,10 @@ function displayLRC(lrcText) {
     updateLyricsDisplay();
     showSynch(); // Show synch section
 }
+
+window.addEventListener("beforeunload", function (event) {
+    let lyricsInput = document.getElementById("lyricsInput").value.trim();
+    if (lyricsInput.length > 0) {
+        event.preventDefault();
+    }
+});
