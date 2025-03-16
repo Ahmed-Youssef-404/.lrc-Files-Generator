@@ -91,7 +91,7 @@ header {
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    border: none;
+    border: 2px solid #007bff;
     margin-top: 15px;
 }
 
@@ -126,14 +126,14 @@ header {
 #lrcButton {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #28a745;
+    background-color: #06098f;
     /* Green color for distinction */
     color: white;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    border: none;
+    border: solid 2px #06098f;
     margin-top: 15px;
 }
 
@@ -335,7 +335,7 @@ textarea::placeholder {
     }
 
     .lyric-line {
-        flex-direction: column;
+        flex-direction: column-reverse;
         height: 130px;
         gap: 15px;
         /* border: solid red; */
@@ -511,4 +511,11 @@ form {
     color: white;
     text-align: center;
     gap: 10px;
+}
+
+
+
+.drag-over {
+    background-color: rgba(0, 255, 0, 0.2) !important;
+    border: 2px dashed #00ff00 !important;
 }

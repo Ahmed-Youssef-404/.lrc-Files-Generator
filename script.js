@@ -542,3 +542,58 @@ window.addEventListener("beforeunload", function (event) {
         event.preventDefault();
     }
 });
+
+// --------------------------------------------
+// --------------------------------------------
+// --------------------------------------------
+// --------------------------------------------
+
+// Select elements
+const dropAreaAudio = document.getElementById("customButton");
+const dropAreaLRC = document.getElementById("lrcButton");
+const audioInput = document.getElementById("audioFile");
+const lrcInput = document.getElementById("lrcFile");
+
+// Prevent default behaviors for drag events
+["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+    dropAreaAudio.addEventListener(eventName, preventDefaults, false);
+    dropAreaLRC.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+// Highlight drop area on dragover
+["dragenter", "dragover"].forEach(eventName => {
+    dropAreaAudio.addEventListener(eventName, () => dropAreaAudio.classList.add("drag-over"), false);
+    dropAreaLRC.addEventListener(eventName, () => dropAreaLRC.classList.add("drag-over"), false);
+});
+
+// Remove highlight on drag leave
+["dragleave", "drop"].forEach(eventName => {
+    dropAreaAudio.addEventListener(eventName, () => dropAreaAudio.classList.remove("drag-over"), false);
+    dropAreaLRC.addEventListener(eventName, () => dropAreaLRC.classList.remove("drag-over"), false);
+});
+
+// Handle file drop
+dropAreaAudio.addEventListener("drop", function (e) {
+    let file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("audio/")) {
+        audioInput.files = e.dataTransfer.files;
+        audioInput.dispatchEvent(new Event("change"));
+    } else {
+        alert("Please drop a valid audio file.");
+    }
+});
+
+dropAreaLRC.addEventListener("drop", function (e) {
+    let file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith(".lrc")) {
+        lrcInput.files = e.dataTransfer.files;
+        lrcInput.dispatchEvent(new Event("change"));
+    } else {
+        alert("Please drop a valid .lrc file.");
+    }
+});
