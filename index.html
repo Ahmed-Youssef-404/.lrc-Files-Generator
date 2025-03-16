@@ -33,37 +33,42 @@
         </div>
 
 
+        <label for="lrcFile" class="inputButton" id="lrcButton" style="display: none;">Select an LRC file</label>
+        <input type="file" id="lrcFile" accept=".lrc" style="display: none;" disabled>
+        <div class="fileInfo" id="lrcFileInfo" style="display: none;">
+            <span id="lrcFileName"></span>
+            <button class="updateButton" id="updateLrcButton">Change File</button>
+        </div>
+
+
         <div class="audioHolder">
             <audio id="audio" controls></audio>
             <div class="topAudioButtons">
-                <button onclick="skip(-3)" class="audioControls spesialButton"><i class="fa-solid fa-backward"></i></button>
-                <button onclick="skip(3)" class="audioControls spesialButton"><i class="fa-solid fa-forward"></i></button>
-                <button onclick="togglePlay()" class="audioControls spesialButton" id="playPauseBtn"><i
+                <button onclick="skip(-3)" class="audioControls spesialButton" title="Rewind 3 seconds"><i
+                        class="fa-solid fa-backward"></i></button>
+                <button onclick="skip(3)" class="audioControls spesialButton" title="Forward 3 seconds"><i
+                        class="fa-solid fa-forward"></i></button>
+                <button onclick="togglePlay()" class="audioControls spesialButton" id="playPauseBtn" title="Play/Pause"><i
                         class="fa-solid fa-play"></i></button>
             </div>
         </div>
 
         <div class="render">
             <button onclick="showText()" class="text showHide spesialButton">Show Text</button>
-            <button onclick="showSynch()" class="synch showHide spesialButton">Synch</button>
+            <button onclick="showSynch()" class="synch showHide spesialButton">Sync</button>
         </div>
-
 
         <textarea id="lyricsInput" placeholder="Enter lyrics, each line separately..." dir="auto"></textarea>
 
-
-
+        
         <div class="hide" id="lyricsContainer"></div>
-
+        
         <div id="popup" class="hide"></div>
-
+        
         <div class="overLay hide" id="overLay" onclick="hidePopup();"></div>
 
-
-
-
-
         <button class="generateButton" onclick="generateLRC()">Generate .lrc File</button>
+
     </div>
 
     <script src="script.js"></script>

@@ -66,26 +66,25 @@ function loadLyrics() {
 function updateLyricsDisplay() {
     let container = document.getElementById('lyricsContainer');
     container.innerHTML = '';
-
     lyrics.forEach((lyric, index) => {
         let div = document.createElement('div');
         div.classList.add('lyric-line');
         div.innerHTML = `
             <input type="text" value="${lyric.text}" id="lyric-text-${index}" class="lyric-input" onblur="confirmEdit(${index})" dir="auto">
             <div class="lyricControls">
-                <button onclick="setTimestamp(${index})"><i class="fa-solid fa-clock"></i></button>
-                <button onclick="playFrom(${index})"><i class="fa-solid fa-play"></i></button>
+                <button onclick="setTimestamp(${index})" title="Sync with audio"><i class="fa-solid fa-clock"></i></button>
+                <button onclick="playFrom(${index})" title="Play from here"><i class="fa-solid fa-play"></i></button>
                 <span id="time-${index}" onclick="manualEditTime(${index})">
                     ${lyric.timestamp ? formatTime(lyric.timestamp).replace(/\[|\]/g, "") : "00:00.00"}
                 </span>
-                <button onclick="showPupUp(${index})"><i class="fa-solid fa-pencil"></i></button>
+                <button onclick="showPupUp(${index})"><i class="fa-solid fa-pencil" title="Edit"></i></button>
             </div>       
             
         `;
         container.appendChild(div);
     });
 
-   
+
 
     updateTextarea();
 }
@@ -102,7 +101,7 @@ function showPupUp(index) {
     let popup = document.getElementById('popup');
     let currentText = lyrics[index].text;
     let currentTimestamp = lyrics[index].timestamp || 0;
-    
+
     popup.classList.add("popup");
     popup.classList.remove("hide");
 
@@ -110,7 +109,7 @@ function showPupUp(index) {
         <div class="popup-content">
             <div class="editPupUp">
                 <label for="edit-text">Edit Text:</label>
-                <input type="text" id="edit-text" value="${currentText}">
+                <input type="text" id="edit-text" value="${currentText}" dir="auto">
             </div>
 
 
@@ -156,7 +155,7 @@ function applyChanges(index) {
         lyrics[index].timestamp = newTimestamp;
         updateLyricsDisplay();
     }
-    
+
     hidePopup();
 }
 
@@ -234,6 +233,65 @@ function updateTextarea() {
     textarea.value = lyrics.map(line => line.text).join('\n');
 }
 
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
+
+
+
+const lyricsInput = document.getElementById("lyricsInput");
+const formattedText = document.querySelector(".formatted-text");
+
+lyricsInput.addEventListener("input", () => {
+    updateFormattedText();
+});
+
+lyricsInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        insertNewLine();
+    }
+});
+
+function insertNewLine() {
+    let cursorPos = lyricsInput.selectionStart;
+    let textBefore = lyricsInput.value.substring(0, cursorPos);
+    let textAfter = lyricsInput.value.substring(cursorPos);
+
+    lyricsInput.value = textBefore + "\n" + textAfter;
+    lyricsInput.selectionStart = lyricsInput.selectionEnd = cursorPos + 1;
+
+    updateFormattedText();
+}
+
+function updateFormattedText() {
+    let text = lyricsInput.value;
+    let lines = text.split("\n");
+    formattedText.innerHTML = "";
+
+    lines.forEach((line, index) => {
+        let p = document.createElement("p");
+        p.textContent = line;
+
+        // لو السطر ده تم إضافته بـ Enter يدويًا، نزود المسافة
+        if (index > 0 && lines[index - 1] !== "") {
+            p.classList.add("entered");
+        }
+
+        formattedText.appendChild(p);
+    });
+}
+
+
+
+
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
+
+
 function formatTime(seconds) {
     let min = Math.floor(seconds / 60).toString().padStart(2, '0');
     let sec = Math.floor(seconds % 60).toString().padStart(2, '0');
@@ -303,7 +361,7 @@ function showSynch() {
         alert("Please select an audio file");
         return;
     }
-    
+
     textinput.classList.add("hide");
     synchs.classList.remove("hide");
     synchs.classList.add("showLyricsContainer");
@@ -320,7 +378,7 @@ function showText() {
     textinput.classList.remove("hide");
 }
 
-function closeOverLay(){
+function closeOverLay() {
     let overLay = document.getElementById("overLay");
     overLay.classList.add("hide");
     overLay.classList.remove("show");
@@ -328,7 +386,7 @@ function closeOverLay(){
 
 
 // Handling Keyboard
-document.addEventListener("keydown", function(event) {
+document.addEventListener("keydown", function (event) {
     // لو التركيز على textarea، لا تنفذ أي دالة
     if ((document.activeElement.tagName.toLowerCase() === "textarea") || (document.activeElement.tagName.toLowerCase() === "input")) {
         return;
@@ -370,9 +428,65 @@ function callLeftArrowFunction() {
 
 
 
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 
 
+const lrcFileInput = document.getElementById("lrcFile");
+const lrcButton = document.getElementById("lrcButton");
+const lrcFileInfo = document.getElementById("lrcFileInfo");
 
+// Enable LRC input after MP3 selection
+fileInput.addEventListener("change", function () {
+    if (fileInput.files.length > 0) {
+        lrcButton.style.display = "inline-block";
+        lrcFileInput.disabled = false;
+    } else {
+        lrcButton.style.display = "none";
+        lrcFileInput.disabled = true;
+        lrcFileInfo.style.display = "none"; // Hide LRC file info if MP3 is removed
+    }
+});
 
+// Handle LRC file replacement
+const updateLrcButton = document.getElementById("updateLrcButton");
+updateLrcButton.addEventListener("click", function () {
+    lrcFileInput.click();
+});
 
+// Read LRC file content
+lrcFileInput.addEventListener("change", function (event) {
+    let file = event.target.files[0];
+    if (file) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            let content = e.target.result;
+            displayLRC(content);
+        };
+        reader.readAsText(file);
 
+        // Show the file name and "Change File" button
+        document.getElementById("lrcFileName").textContent = file.name;
+        lrcFileInfo.style.display = "block";
+    }
+});
+
+// Display LRC lyrics in the "synch" section
+function displayLRC(lrcText) {
+    lrcButton.style.display = "none";
+    let lines = lrcText.split("\n").filter(line => line.trim() !== "");
+    lyrics = lines.map(line => {
+        let match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+        if (match) {
+            let minutes = parseInt(match[1]);
+            let seconds = parseFloat(match[2]);
+            return { text: match[3].trim(), timestamp: minutes * 60 + seconds };
+        }
+        return { text: line.trim(), timestamp: null };
+    });
+
+    updateLyricsDisplay();
+    showSynch(); // Show synch section
+}
