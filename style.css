@@ -362,6 +362,12 @@ textarea::placeholder {
     background-color: #010023;
 }
 
+.highlight {
+    background-color: rgb(79, 81, 143);
+    /* color: black; */
+    font-weight: bold;
+    transition: background-color 0.1s ease-in-out;
+}
 
 .popup {
     position: fixed;

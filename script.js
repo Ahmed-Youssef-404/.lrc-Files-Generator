@@ -68,6 +68,7 @@ function updateLyricsDisplay() {
     container.innerHTML = '';
     lyrics.forEach((lyric, index) => {
         let div = document.createElement('div');
+        div.setAttribute('data-timestamp', lyric.timestamp || 0);
         div.classList.add('lyric-line');
         div.innerHTML = `
             <input type="text" value="${lyric.text}" id="lyric-text-${index}" class="lyric-input" onblur="confirmEdit(${index})" dir="auto">
@@ -83,13 +84,53 @@ function updateLyricsDisplay() {
         `;
         container.appendChild(div);
     });
-
-
-
     updateTextarea();
 }
 
 // --------------------------------------
+
+function highlightLyrics() {
+    let currentTime = audio.currentTime;
+    let lyricsContainer = document.getElementById('lyricsContainer');
+    let parentContainer = document.querySelector('.showLyricsContainer'); // Restrict scrolling to this div
+    let lines = lyricsContainer.getElementsByClassName('lyric-line');
+
+    let activeLine = null;
+    for (let line of lines) {
+        let timestamp = parseFloat(line.getAttribute('data-timestamp'));
+        if (!isNaN(timestamp) && currentTime >= timestamp) {
+            activeLine = line;
+        }
+    }
+
+    for (let line of lines) {
+        line.classList.remove('highlight');
+    }
+
+    if (activeLine) {
+        activeLine.classList.add('highlight');
+
+        // Ensure "showLyricsContainer" scrolls properly
+        if (parentContainer) {
+            let containerTop = parentContainer.scrollTop; // Current scroll position
+            let containerHeight = parentContainer.clientHeight; // Visible height
+            let lineTop = activeLine.offsetTop - parentContainer.offsetTop; // Position of the lyric relative to the container
+            let lineHeight = activeLine.clientHeight; // Height of the lyric
+
+            let scrollPosition = lineTop - (containerHeight / 2) + (lineHeight / 2);
+            parentContainer.scrollTo({
+                top: scrollPosition,
+                behavior: "smooth"
+            });
+        }
+    }
+}
+
+audio.ontimeupdate = highlightLyrics;
+
+
+
+
 
 
 
