@@ -89,48 +89,65 @@ function updateLyricsDisplay() {
     updateTextarea();
 }
 
-// --------------------------------------
-// function highlightLyrics() {
-//     let currentTime = audio.currentTime;
-//     let lyricsContainer = document.getElementById('lyricsContainer');
-//     let parentContainer = document.querySelector('.showLyricsContainer');
-//     let lines = lyricsContainer.getElementsByClassName('lyric-line');
-
-//     let activeLine = null;
-//     for (let line of lines) {
-//         let timestamp = parseFloat(line.getAttribute('data-timestamp'));
-//         if (!isNaN(timestamp) && timestamp > 0 && currentTime >= timestamp) {
-//             activeLine = line;
-//         }
-//     }
-
-//     for (let line of lines) {
-//         line.classList.remove('highlight');
-//     }
-
-//     if (activeLine) {
-//         activeLine.classList.add('highlight');
-
-//         if (parentContainer) {
-//             let containerTop = parentContainer.scrollTop;
-//             let containerHeight = parentContainer.clientHeight;
-//             let lineTop = activeLine.offsetTop - parentContainer.offsetTop;
-//             let lineHeight = activeLine.clientHeight;
-
-//             let scrollPosition = lineTop - (containerHeight / 2) + (lineHeight / 2);
-//             parentContainer.scrollTo({
-//                 top: scrollPosition,
-//                 behavior: "smooth"
-//             });
-//         }
-//     }
-// }
-
-// audio.ontimeupdate = highlightLyrics;
 
 
 
 
+function highlightLyrics() {
+    let currentTime = audio.currentTime;
+    let lyricsContainer = document.getElementById('lyricsContainer');
+    let lyricLines = lyricsContainer.getElementsByClassName('lyric-line');
+    let parentContainer = document.querySelector('.showLyricsContainer');
+
+    let lastHighlightedIndex = -1;
+
+    // Iterate through the lyrics to find the currently playing one
+    for (let i = 0; i < lyrics.length; i++) {
+        let lyric = lyrics[i];
+        if (lyric.timestamp !== null && lyric.timestamp > 0 && currentTime >= lyric.timestamp) {
+            lastHighlightedIndex = i;
+        }
+    }
+
+    // Remove highlight from all lyrics
+    for (let line of lyricLines) {
+        line.classList.remove('highlight');
+    }
+
+    // Highlight the most recent synchronized lyric
+    if (lastHighlightedIndex !== -1) {
+        let activeLine = lyricLines[lastHighlightedIndex];
+        activeLine.classList.add('highlight');
+
+        // Smooth scrolling to center the highlighted lyric
+        if (parentContainer) {
+            let containerTop = parentContainer.scrollTop;
+            let containerHeight = parentContainer.clientHeight;
+            let lineTop = activeLine.offsetTop - parentContainer.offsetTop;
+            let lineHeight = activeLine.clientHeight;
+
+            // Calculate the scroll position to center the lyric
+            let scrollPosition = lineTop - (containerHeight / 2) + (lineHeight / 2);
+
+            // Smoothly scroll to the calculated position
+            parentContainer.scrollTo({
+                top: scrollPosition,
+                behavior: "smooth"
+            });
+        }
+    }
+}
+
+// Attach the highlight function to the audio's timeupdate event
+audio.addEventListener('timeupdate', highlightLyrics);
+
+// Update the setTimestamp function
+function setTimestamp(index) {
+    let time = audio.currentTime;
+    lyrics[index].timestamp = time;
+    document.getElementById(`time-${index}`).innerText = formatTime(time).replace("[", "").replace("]", "");
+    highlightLyrics(); // Highlight the newly synchronized lyric
+}
 
 
 
@@ -307,7 +324,7 @@ function insertNewLine() {
     lyricsInput.value = textBefore + "\n" + textAfter;
     lyricsInput.selectionStart = lyricsInput.selectionEnd = cursorPos + 1;
 
-    updateFormattedText();
+    // updateFormattedText();
 }
 
 // function updateFormattedText() {
